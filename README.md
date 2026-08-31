@@ -1,15 +1,11 @@
 # sloppy lightswitch 🌞🌚
 
 A Firefox (desktop **and Android**) WebExtension that gives you control over
-what websites learn about your light/dark mode system setting
-(`prefers-color-scheme`) — on both channels:
-
-- the **request header** `Sec-CH-Prefers-Color-Scheme` (the client hint, for
-  sites that theme server-side), and
-- what the **page itself sees**: `window.matchMedia`, CSS
-  `@media (prefers-color-scheme: …)` rules, `media=""` attributes on
-  `<source>`/`<link>`/`<style>`, and the UA's own `color-scheme` pick (form
-  controls, scrollbars, `light-dark()`).
+what websites see as your light/dark mode system setting
+(`prefers-color-scheme`): `window.matchMedia`, CSS
+`@media (prefers-color-scheme: …)` rules, `media=""` attributes on
+`<source>`/`<link>`/`<style>`, and the UA's own `color-scheme` pick (form
+controls, scrollbars, `light-dark()`).
 
 Flip it globally, or per host — sloppily.
 
@@ -17,9 +13,9 @@ Flip it globally, or per host — sloppily.
 
 | mode | what happens |
 |---|---|
-| 🖥️ `system` | nothing is touched — headers and pages behave as if the extension weren't there |
-| 🌞 `light` | header says `"light"`, and the page is convinced your scheme is light |
-| 🌚 `dark` | header says `"dark"`, and the page is convinced your scheme is dark |
+| 🖥️ `system` | nothing is touched — pages behave as if the extension weren't there |
+| 🌞 `light` | the page is convinced your scheme is light |
+| 🌚 `dark` | the page is convinced your scheme is dark |
 | 🙃 `invert` | the opposite of your OS setting, live — flipping the OS theme still flips the page, just the wrong way around |
 
 The popup lets you pick a **global** mode and, for the site in the current tab,
@@ -28,13 +24,14 @@ Per-host overrides win over the global mode.
 
 ## How it works / limitations
 
-- The header is rewritten via blocking `webRequest`. Firefox doesn't send
-  this client hint natively, so for `light`/`dark`/`invert` it's injected
-  unconditionally, whether or not the server asked via `Accept-CH`.
-- The page-side spoofing runs at `document_start`, before any page script
-  (including anti-FOUC theme sniffers). `prefers-color-scheme` conditions
-  are rewritten in `matchMedia` queries and in every reachable stylesheet;
+- The spoofing runs at `document_start`, before any page script (including
+  anti-FOUC theme sniffers). `prefers-color-scheme` conditions are
+  rewritten in `matchMedia` queries and in every reachable stylesheet;
   cross-origin stylesheets are refetched and swapped in.
+- Everything happens in the page — network requests are untouched. The
+  `Sec-CH-Prefers-Color-Scheme` client hint header (Chromium-only in
+  practice; Firefox never sends it) is out of scope, so the rare site that
+  themes its server-rendered HTML from that hint won't follow.
 - 🫠 Sloppy edges: mode changes apply to pages on their next (re)load; rules
   a page inserts later through CSSOM (`insertRule`) aren't caught;
   `MediaQueryList.media` shows the rewritten query text; `@import`s nested

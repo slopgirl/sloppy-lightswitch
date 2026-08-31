@@ -1,20 +1,22 @@
 # NOTES (for future me)
 
-## Decisions
+## Decisions (0.3.0)
+
+- **Header layer removed.** 0.1.0's whole point was rewriting
+  `Sec-CH-Prefers-Color-Scheme` via blocking webRequest, but Firefox never
+  sends that client hint and virtually no site consumes it — the 0.2.0
+  client-side spoofing is what actually flips pages. Dropped it (with the
+  `webRequest`/`webRequestBlocking` permissions) on request. If it's ever
+  wanted again, `git show v0.2.0:background.js` has the implementation;
+  the header-specific 0.1.0 notes below are historical now.
+
+## Decisions (0.1.0, still current)
 
 - **MV2, not MV3**: Firefox supports both indefinitely; MV2 with a persistent
-  background page + blocking `webRequest` is the simplest thing that works on
-  Fenix (Android). MV3 in Firefox would also allow blocking webRequest (unlike
-  Chrome), so a migration is possible but not urgent.
-- **`system` = passthrough**, not "send the actual system value". Rationale:
-  `system` should behave exactly as if the extension weren't installed, and
-  Firefox doesn't natively send `Sec-CH-Prefers-Color-Scheme` at all (client
-  hints are unsupported in Gecko as of writing).
-- **Header value is quoted** (`"dark"`, not `dark`): client hints are HTTP
-  structured-field strings; Chrome sends them quoted, spec agrees.
-- **`invert` semantics**: flip the existing header value if the request already
-  had one, else flip the OS scheme (read via `matchMedia` in the background
-  page).
+  background page is the simplest thing that works on Fenix (Android). A
+  migration is possible but not urgent.
+- **`system` = do nothing**: behave exactly as if the extension weren't
+  installed (the content script bails out early).
 - Per-host key is the exact `URL.hostname` — no `www.` normalization, no
   eTLD+1 grouping. Predictable, if a bit sloppy.
 - `data_collection_permissions: { required: ["none"] }` is in the manifest —
@@ -22,6 +24,14 @@
 - Slopified from birth: identity `slopgirl <slopgirl@macroslop.dev>`, branch
   `slop`, no personal identifiers anywhere in the repo. Keep it that way
   (no `Claude-Session:` trailers in commits either).
+
+## Decisions (0.1.0, header layer — historical since 0.3.0)
+
+- **Header value was quoted** (`"dark"`, not `dark`): client hints are HTTP
+  structured-field strings; Chrome sends them quoted, spec agrees.
+- **Header `invert` semantics**: flip the existing header value if the request
+  already had one, else flip the OS scheme (read via `matchMedia` in the
+  background page).
 
 ## Decisions (0.2.0, client-side spoofing)
 
@@ -78,7 +88,8 @@
 
 ## Testing
 
-- Desktop: `about:debugging` → load temporary add-on → visit
-  https://httpbin.org/headers (or any echo service) and flip modes.
+- Desktop: `about:debugging` → load temporary add-on → visit any site that
+  follows the system theme (or a `prefers-color-scheme` demo page) and flip
+  modes; `invert` + toggling the OS appearance is the fun one.
 - Android: `just run-android` needs `adb` and Fenix with USB debugging;
   web-ext docs: https://extensionworkshop.com/documentation/develop/developing-extensions-for-firefox-for-android/

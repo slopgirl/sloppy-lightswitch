@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 Versioning follows [SemVer](https://semver.org/).
 
+## [0.3.0] - 2026-08-31
+
+### Removed
+
+- The `Sec-CH-Prefers-Color-Scheme` header rewriting layer, and with it the
+  `webRequest`/`webRequestBlocking` permissions. Firefox never sends the
+  client hint natively and next to nothing consumes it; the client-side
+  spoofing from 0.2.0 is what actually flips sites. Sites theming
+  server-rendered HTML from that hint are out of scope now.
+
 ## [0.2.0] - 2026-08-31
 
 ### Added
