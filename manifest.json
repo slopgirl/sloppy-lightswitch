@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "Sloppy Lightswitch",
-  "version": "0.1.0",
-  "description": "Sloppily flip the prefers-color-scheme client hint header (Sec-CH-Prefers-Color-Scheme) per site or globally: system, light, dark, or invert.",
+  "version": "0.2.0",
+  "description": "Sloppily flip prefers-color-scheme per site or globally: the Sec-CH-Prefers-Color-Scheme client hint header AND what the page itself sees (matchMedia, CSS media queries). Modes: system, light, dark, invert.",
   "homepage_url": "https://macroslop.dev/sloppy-lightswitch",
   "browser_specific_settings": {
     "gecko": {

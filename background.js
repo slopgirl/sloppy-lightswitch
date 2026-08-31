@@ -4,6 +4,9 @@
  * globally. Modes: "system" (leave the request untouched), "light",
  * "dark", "invert" (opposite of whatever would have been sent — the
  * existing header if present, the OS setting otherwise).
+ *
+ * Also (re)registers the content script that spoofs the scheme inside
+ * pages (matchMedia, CSS media conditions, UA color-scheme).
  */
 
 "use strict";
@@ -71,12 +74,46 @@ browser.webRequest.onBeforeSendHeaders.addListener(
   ["blocking", "requestHeaders"]
 );
 
+/* Client-side spoofing: register the content script dynamically with the
+ * current settings embedded as a code block, so it runs synchronously at
+ * document_start — before any page script — with no async storage race.
+ * Re-registered on every settings change (already-open pages keep the old
+ * mode until reload). */
+
+let registeredScript = null;
+let syncChain = Promise.resolve();
+
+function syncContentScript() {
+  syncChain = syncChain.then(async () => {
+    try {
+      const next = await browser.contentScripts.register({
+        matches: ["<all_urls>"],
+        js: [
+          { code: `window.__SLOPPY_SETTINGS = ${JSON.stringify(settings)};` },
+          { file: "shared/rewrite.js" },
+          { file: "content.js" },
+        ],
+        runAt: "document_start",
+        allFrames: true,
+        matchAboutBlank: true,
+      });
+      if (registeredScript) await registeredScript.unregister();
+      registeredScript = next;
+    } catch (e) {
+      console.warn("sloppy lightswitch: content script registration failed", e);
+    }
+  });
+  return syncChain;
+}
+
 browser.storage.local.get(DEFAULTS).then((stored) => {
   settings = { ...DEFAULTS, ...stored };
+  syncContentScript();
 });
 
 browser.storage.onChanged.addListener((changes, area) => {
   if (area !== "local") return;
   if (changes.global) settings.global = changes.global.newValue ?? DEFAULTS.global;
   if (changes.hosts) settings.hosts = changes.hosts.newValue ?? {};
+  syncContentScript();
 });

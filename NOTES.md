@@ -23,11 +23,52 @@
   `slop`, no personal identifiers anywhere in the repo. Keep it that way
   (no `Claude-Session:` trailers in commits either).
 
+## Decisions (0.2.0, client-side spoofing)
+
+- **Query/condition rewriting, not result faking**: pinned modes replace
+  `(prefers-color-scheme: X)` with constant conditions
+  (`(width >= 0px)` / `(width < 0px)` — always/never true, valid anywhere a
+  media feature fits); `invert` swaps the light/dark tokens so the condition
+  keeps tracking the OS, flipped. Same pure transform (`shared/rewrite.js`)
+  drives matchMedia, CSSOM, media attributes, and refetched CSS text —
+  and is unit-testable in node.
+- **`contentScripts.register` with settings embedded as a code block**:
+  the only way to get settings *synchronously* at `document_start`; an
+  async `storage.get` in a static content script races the page's inline
+  theme-sniffer scripts (exactly the scripts we most need to beat).
+  Re-registered on every settings change; open pages keep the old mode
+  until reload (popup says so).
+- **`exportFunction` + `wrappedJSObject`** for the matchMedia patch — page
+  CSP can't block it (unlike injecting `<script>` elements). The patched
+  function calls the *page's* real matchMedia with the rewritten query, so
+  pages get genuine MediaQueryList objects with working change events.
+- **Cross-origin sheets**: `sheet.cssRules` throws → refetch via content
+  script `fetch` (host permissions beat CORS), rewrite conditions in the
+  raw text, absolutify `url()`/`@import` refs against the sheet URL,
+  insert a `<style>` right after the `<link>`, then disable the link.
+
+## Known gaps (client-side spoofing)
+
+- Rules inserted later via CSSOM `insertRule` aren't caught (could patch
+  `CSSStyleSheet.prototype.insertRule` in the page world some day).
+- `@import`s *inside* refetched cross-origin sheets keep their original
+  conditions (no recursive refetch).
+- `MediaQueryList.media` / rewritten attributes show the rewritten text —
+  detectable, and could confuse code that string-compares its queries.
+- Strict `style-src` CSP may block the injected `<style>` replacing a
+  cross-origin sheet (content-script DOM insertions are subject to page
+  CSP; `document.adoptedStyleSheets` would dodge it but changes cascade
+  order).
+- Iframes use *their own* hostname for per-host lookup (consistent with
+  how the header rewrite sees their requests), so an embedded widget can
+  disagree with its embedder.
+- UA `color-scheme` pin only kicks in when the page declares support for
+  both schemes (meta or computed root style) — forcing dark UA colors on a
+  light-only page would produce unreadable soup, that's Dark Reader's job.
+
 ## Ideas / possible next steps
 
-- [ ] Companion content script that patches `window.matchMedia` +
-      injects a `color-scheme` override so client-side-only sites react too
-      (that's the bigger hammer; header-only is what was asked for).
+- [ ] Patch page-world `CSSStyleSheet.prototype.insertRule` for the CSSOM gap.
 - [ ] Badge / dynamic icon showing the effective mode for the current tab.
 - [ ] Options page listing all host overrides with delete buttons (popup only
       shows the current tab's host right now).

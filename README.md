@@ -1,36 +1,46 @@
 # sloppy lightswitch 🌞🌚
 
-A Firefox (desktop **and Android**) WebExtension that gives you control over the
-request header that tells websites about your light/dark mode system setting:
-`Sec-CH-Prefers-Color-Scheme` (the client hint for the CSS
-`prefers-color-scheme` media query).
+A Firefox (desktop **and Android**) WebExtension that gives you control over
+what websites learn about your light/dark mode system setting
+(`prefers-color-scheme`) — on both channels:
+
+- the **request header** `Sec-CH-Prefers-Color-Scheme` (the client hint, for
+  sites that theme server-side), and
+- what the **page itself sees**: `window.matchMedia`, CSS
+  `@media (prefers-color-scheme: …)` rules, `media=""` attributes on
+  `<source>`/`<link>`/`<style>`, and the UA's own `color-scheme` pick (form
+  controls, scrollbars, `light-dark()`).
 
 Flip it globally, or per host — sloppily.
 
 ## Modes
 
-| mode | what gets sent |
+| mode | what happens |
 |---|---|
-| 🖥️ `system` | nothing is touched — the request goes out as Firefox built it |
-| 🌞 `light` | `Sec-CH-Prefers-Color-Scheme: "light"` |
-| 🌚 `dark` | `Sec-CH-Prefers-Color-Scheme: "dark"` |
-| 🙃 `invert` | the opposite of what would have been indicated (the existing header value if the request had one, otherwise your OS setting) |
+| 🖥️ `system` | nothing is touched — headers and pages behave as if the extension weren't there |
+| 🌞 `light` | header says `"light"`, and the page is convinced your scheme is light |
+| 🌚 `dark` | header says `"dark"`, and the page is convinced your scheme is dark |
+| 🙃 `invert` | the opposite of your OS setting, live — flipping the OS theme still flips the page, just the wrong way around |
 
 The popup lets you pick a **global** mode and, for the site in the current tab,
 a **per-host** override (or `🌐 global` to follow the global mode again).
 Per-host overrides win over the global mode.
 
-## What this does and doesn't do
+## How it works / limitations
 
-- ✅ Adds/overrides the `Sec-CH-Prefers-Color-Scheme` request header on every
-  request (per host / globally). Sites that read the client hint server-side
-  will see your chosen scheme.
-- ❌ It does **not** change the CSS `prefers-color-scheme` media query inside
-  the page — sites styling purely client-side won't notice. (See `NOTES.md`
-  for ideas about a companion content-script mode.)
-- Note: Firefox itself doesn't send this client hint natively; this extension
-  injects it unconditionally for `light`/`dark`/`invert`, whether or not the
-  server asked for it via `Accept-CH`.
+- The header is rewritten via blocking `webRequest`. Firefox doesn't send
+  this client hint natively, so for `light`/`dark`/`invert` it's injected
+  unconditionally, whether or not the server asked via `Accept-CH`.
+- The page-side spoofing runs at `document_start`, before any page script
+  (including anti-FOUC theme sniffers). `prefers-color-scheme` conditions
+  are rewritten in `matchMedia` queries and in every reachable stylesheet;
+  cross-origin stylesheets are refetched and swapped in.
+- 🫠 Sloppy edges: mode changes apply to pages on their next (re)load; rules
+  a page inserts later through CSSOM (`insertRule`) aren't caught;
+  `MediaQueryList.media` shows the rewritten query text; `@import`s nested
+  inside refetched cross-origin sheets keep their original conditions; on
+  sites with a strict `style-src` CSP the cross-origin swap-in may be
+  blocked. Details in `NOTES.md`.
 
 ## Install
 
@@ -54,6 +64,7 @@ or build an XPI (`just build`) and sign/self-distribute it via
 
 ```sh
 just            # list recipes
+just check      # unit tests + syntax checks (no tooling needed)
 just build      # zip an XPI into dist/
 just lint       # web-ext lint (via npx)
 just run        # run in desktop Firefox (via npx web-ext)

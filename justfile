@@ -9,7 +9,7 @@ version := `python3 -c "import json; print(json.load(open('manifest.json'))['ver
 build:
     mkdir -p dist
     zip -r -FS "dist/sloppy-lightswitch-{{version}}.xpi" \
-        manifest.json background.js popup icons \
+        manifest.json background.js content.js shared popup icons \
         -x "*.DS_Store"
     @echo "built dist/sloppy-lightswitch-{{version}}.xpi"
 
@@ -25,9 +25,15 @@ run:
 run-android:
     npx --yes web-ext run --source-dir . --target firefox-android
 
+# run the media-condition rewrite unit tests
+test:
+    node test/rewrite.test.js
+
 # syntax-check the JS without any tooling
-check:
+check: test
     node --check background.js
+    node --check content.js
+    node --check shared/rewrite.js
     node --check popup/popup.js
     python3 -m json.tool manifest.json > /dev/null
     @echo "all good ✨"
