@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sloppy Lightswitch</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="../icons/icon.svg" alt="" width="36" height="36">
+    <h1>sloppy lightswitch</h1>
+  </header>
+
+  <section>
+    <h2>everywhere</h2>
+    <div class="modes" id="global-modes" role="radiogroup" aria-label="Global mode">
+      <button data-mode="system"><span class="emoji">🖥️</span>system</button>
+      <button data-mode="light"><span class="emoji">🌞</span>light</button>
+      <button data-mode="dark"><span class="emoji">🌚</span>dark</button>
+      <button data-mode="invert"><span class="emoji">🙃</span>invert</button>
+    </div>
+  </section>
+
+  <section id="host-section" hidden>
+    <h2>just for <span id="host-name"></span></h2>
+    <div class="modes" id="host-modes" role="radiogroup" aria-label="Site mode">
+      <button data-mode=""><span class="emoji">🌐</span>global</button>
+      <button data-mode="system"><span class="emoji">🖥️</span>system</button>
+      <button data-mode="light"><span class="emoji">🌞</span>light</button>
+      <button data-mode="dark"><span class="emoji">🌚</span>dark</button>
+      <button data-mode="invert"><span class="emoji">🙃</span>invert</button>
+    </div>
+  </section>
+
+  <section id="no-host" hidden>
+    <p class="hint">this page has no host to switch — sloppy, but true 💅</p>
+  </section>
+
+  <footer>
+    <p class="hint" id="status"></p>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
