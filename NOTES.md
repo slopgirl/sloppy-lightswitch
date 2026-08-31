@@ -1,5 +1,38 @@
 # NOTES (for future me)
 
+## Decisions (0.4.0, AMO signing)
+
+- **Add-on ID is per-add-on** (`sloppylightswitch@macroslop.dev`), not the
+  account-wide `slopgirl@macroslop.dev` it started as. AMO binds an ID to one
+  add-on forever, so a generic ID would have burned the name for every future
+  slopgirl extension. Changed before the first upload; after that it is
+  unchangeable.
+- **Packaging is a deny-list, not an allow-list.** Sources live at the repo
+  root (no `src/`, unlike sloppy redirect), and `web-ext sign` always packages
+  the whole `--source-dir`. So `just build` had to stop hand-picking files with
+  `zip` — otherwise the tested package and the signed package could drift. The
+  `ignore` variable in the justfile is the one definition, shared by lint, run,
+  build and sign. Verify with `unzip -l dist/*.zip` after adding a top-level
+  file.
+- **Unlisted is the default channel.** Signing ≠ publishing: unlisted hands
+  back a signed `.xpi` with no review, which is all that Firefox Nightly for
+  Android (debug menu → *Install add-on from file*) and desktop release need.
+  `just sign listed` is the public submission, and only that gets the add-on
+  onto stable Firefox for Android.
+- **`amo-metadata.json` is listed-only.** AMO ignores it for unlisted uploads,
+  so the justfile only passes `--amo-metadata` on the listed channel.
+- **MIT, with a LICENSE file.** A listed submission has to declare a license
+  and AMO's picker is narrower than SPDX; MIT is the closest supported thing
+  to the README's "do whatever, sloppily", and matches sloppy redirect.
+- **`tools/amo-fetch-signed.py` exists because `web-ext sign` is flaky at the
+  "waiting for approval" step**: the upload lands, the connection drops, and a
+  retry then fails with *version already exists*. The script mints its own JWT
+  against AMO's v5 API and downloads the finished file instead.
+- Credentials live in a git-ignored `.env` loaded by just, never in the shell
+  profile. `_amo-creds` checks them *before* lint and tests so a missing key
+  fails in a second, not a minute. `.amo-upload-uuid` (written by web-ext into
+  the source dir) is git-ignored too.
+
 ## Decisions (0.3.0)
 
 - **Header layer removed.** 0.1.0's whole point was rewriting
@@ -84,7 +117,8 @@
       shows the current tab's host right now).
 - [ ] Also set `Sec-CH-Prefers-Color-Scheme` on the response's `Critical-CH`
       dance? Probably overkill — we inject unconditionally anyway.
-- [ ] Sign & publish on AMO for real Android installs.
+- [x] Sign & publish on AMO for real Android installs — tooling is in
+      place (`just sign`); the listed submission still has to be made.
 
 ## Testing
 

@@ -2,3 +2,5 @@ dist/
 web-ext-artifacts/
 .DS_Store
 node_modules/
+.env
+.amo-upload-uuid

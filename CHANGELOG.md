@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 Versioning follows [SemVer](https://semver.org/).
 
+## [0.4.0] - 2026-08-31
+
+### Changed
+
+- **Add-on ID is now `sloppylightswitch@macroslop.dev`** (was the generic
+  `slopgirl@macroslop.dev`). AMO binds an ID to one add-on permanently, so it
+  had to be per-add-on before the first upload. Anyone who loaded a pre-0.4.0
+  unsigned build has a stale entry under the old ID.
+- `just build` packages via `web-ext` instead of a hand-rolled `zip`, sharing
+  one ignore list with `lint`/`run`/`sign` — so the tested package and the
+  signed package are the same package. Output is `dist/*.zip`, not
+  `dist/*.xpi`; the `.xpi` now comes from `just sign`.
+
+### Added
+
+- AMO signing and publishing: `just sign [unlisted|listed]`, credentials from
+  a git-ignored `.env` (`.env.example` as template), `just fetch-signed` to
+  recover an `.xpi` when signing loses the connection while waiting for
+  approval, and `just bump` for the manifest version.
+- `amo-metadata.json` with the public listing (slug `sloppy-lightswitch-uwu`,
+  category `appearance`, MIT, description/summary), sent with listed uploads.
+- `LICENSE` (MIT) — a listed AMO submission needs a declared license.
+
 ## [0.3.0] - 2026-08-31
 
 ### Removed

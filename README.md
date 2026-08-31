@@ -44,29 +44,99 @@ Per-host overrides win over the global mode.
 ### Desktop (temporary, for hacking)
 
 1. `about:debugging#/runtime/this-firefox`
-2. *Load Temporary Add-on…* → pick `manifest.json`
+2. *Load Temporary Add-on…* → pick `manifest.json`. Or `just run`.
 
-### Android
+### Desktop (permanent)
 
-Firefox for Android installs extensions signed by AMO. For development:
+Firefox release only installs signed add-ons, so sign the package at AMO with
+`just sign` (unlisted self-distribution is fine) and open the resulting
+`dist/*.xpi`. Alternatively use Firefox Developer Edition / Nightly with
+`xpinstall.signatures.required` set to `false` and install the unsigned zip
+from `just build`.
+
+### Android (temporary, for testing)
 
 ```sh
 just run-android   # needs adb + a connected device with Firefox (Fenix)
 ```
 
-or build an XPI (`just build`) and sign/self-distribute it via
-[addons.mozilla.org](https://addons.mozilla.org).
+The Android equivalent of *Load Temporary Add-on*: the extension is pushed over
+adb and loaded for that debugging session only, so it disappears when web-ext
+exits or Firefox restarts. Enable *Settings → Advanced → Remote debugging via
+USB* in Firefox first, and keep the `just run-android` process alive.
+
+### Android (permanent)
+
+Firefox for Android enforces add-on signatures and ignores
+`xpinstall.signatures.required`, so a permanent install needs a signed `.xpi`.
+Signing is not the same as publishing: `just sign` uses AMO's **unlisted**
+channel, which hands the package to the signing service and gives it straight
+back signed — no review, no listing, nothing anyone else can find. Then, on
+Firefox **Nightly** for Android, enable the debug menu (*Settings → About
+Firefox Nightly →* tap the logo five times) and use *Install add-on from file*
+to pick the `.xpi` from `dist/`. The stable release channel refuses anything
+that did not come from addons.mozilla.org, so it needs a **listed** submission
+(see below). Android forks (Fennec F-Droid, IronFox) enforce signing too, so
+they are not a way around this.
+
+## Signing
+
+`just sign` needs AMO API credentials. Create a key at
+[addons.mozilla.org/developers/addon/api/key/](https://addons.mozilla.org/developers/addon/api/key/),
+then `cp .env.example .env` and fill in `WEB_EXT_API_KEY` / `WEB_EXT_API_SECRET`
+— the justfile loads `.env` automatically and `.env` is git-ignored. Exported
+shell variables work too. Without them the recipe stops immediately, before
+lint and tests run.
+
+```sh
+just sign            # unlisted: signed .xpi straight back into dist/
+just sign listed     # listed: submits the version for AMO review
+```
+
+If `just sign` dies with `WebExtError: fetch failed` after *"Waiting for
+approval"*, the upload already went through — AMO has the version and has very
+likely signed it, and re-running `just sign` would only fail with *version
+already exists*. Run `just fetch-signed` to download the finished `.xpi`
+instead (`just fetch-signed 0.4.0` for a specific version).
+
+### Publishing to AMO (listed)
+
+Only needed to make the add-on **public** — that is what makes it installable
+on the stable Firefox for Android channel, which refuses anything that did not
+come from addons.mozilla.org.
+
+1. `just bump 0.5.0` and update the CHANGELOG. Version numbers are unique per
+   add-on across *both* channels, so a number already used for an unlisted
+   signature cannot be reused for the listed submission.
+2. Check `amo-metadata.json` — slug, category (`appearance`), license (`MIT`)
+   and the public description. It is sent with the upload to fill in the
+   listing, and is ignored for unlisted signatures.
+3. `just sign listed`. This submits the version for Mozilla's review; it is a
+   public submission, not a private signature.
+4. Watch the review at the Developer Hub. An `<all_urls>` host permission plus
+   a content script that rewrites stylesheets usually means a human reviewer
+   rather than an automatic pass, so expect days rather than minutes.
+
+Once approved the add-on is public at
+`https://addons.mozilla.org/firefox/addon/sloppy-lightswitch-uwu/`, installable
+on desktop and on stable Firefox for Android.
 
 ## Development
 
 ```sh
 just            # list recipes
 just check      # unit tests + syntax checks (no tooling needed)
-just build      # zip an XPI into dist/
-just lint       # web-ext lint (via npx)
-just run        # run in desktop Firefox (via npx web-ext)
+just lint       # AMO linter (via npx web-ext)
+just run        # temporary Firefox with the extension loaded
+just build      # lint + test + package into dist/
+just sign       # lint + test + AMO-signed .xpi into dist/
 ```
+
+Sources live at the repo root, so the package is defined by an ignore list in
+the justfile (`test/`, `tools/`, `*.md`, `justfile`, `amo-metadata.json`) that
+`lint`, `run`, `build` and `sign` all share — what gets tested is what gets
+signed.
 
 ## License
 
-Do whatever, sloppily.
+MIT — do whatever, sloppily. See [LICENSE](LICENSE).
