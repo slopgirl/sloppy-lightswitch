@@ -24,6 +24,10 @@
   stays in the package because the two HTML pages use it in their header.
   The AMO *listing* icon is uploaded separately in the Developer Hub (use
   `icons/icon-128.png`).
+- **Tags track AMO, nothing else.** A `vX.Y.Z` tag exists only for versions
+  that were uploaded to addons.mozilla.org (v0.4.0, v0.5.0 so far); the
+  never-published 0.1.0–0.3.0 tags were deleted. Reference older states by
+  commit hash.
 - **`invert` is gone.** It was the one mode that had to keep tracking the OS
   (special cases in the rewriter, the observer loop guards, the UA pin), and
   nobody needs "the wrong theme, live". `sanitize()` in `shared/settings.js`
@@ -85,7 +89,7 @@
   sends that client hint and virtually no site consumes it — the 0.2.0
   client-side spoofing is what actually flips pages. Dropped it (with the
   `webRequest`/`webRequestBlocking` permissions) on request. If it's ever
-  wanted again, `git show v0.2.0:background.js` has the implementation;
+  wanted again, `git show e6e75df:background.js` has the implementation;
   the header-specific 0.1.0 notes below are historical now.
 
 ## Decisions (0.1.0, still current)
