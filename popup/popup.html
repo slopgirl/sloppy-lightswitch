@@ -3,45 +3,65 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sloppy Lightswitch</title>
+  <title>sloppy lightswitch</title>
+  <link rel="stylesheet" href="../shared/sloppy.css">
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="g-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3.5 C17 3 20.5 7 20.5 12 C20.5 17 17 20.8 12 20.5 C7 20.8 3.3 17 3.5 12 C3.3 7 7 3 12 3.5 Z"/>
+      <path d="M12 3.5 C12.4 9 11.6 15 12 20.5 C17 20.8 20.5 17 20.5 12 C20.5 7 17 3 12 3.5 Z" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="g-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <path d="M12 7.5 C15 7.2 16.8 9.5 16.5 12 C16.8 14.8 14.6 16.7 12 16.5 C9.3 16.7 7.2 14.6 7.5 12 C7.2 9.4 9.4 7.2 12 7.5 Z"/>
+      <path d="M12 2.5 l0.3 2.3 M12 19.3 l-0.3 2.2 M2.5 12 l2.4 -0.3 M19.2 12.2 l2.3 0.2 M5.2 5.4 l1.7 1.5 M17.2 17 l1.6 1.8 M5.3 18.8 l1.6 -1.7 M17.3 6.8 l1.5 -1.7"/>
+    </symbol>
+    <symbol id="g-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14.5 3.5 C10.5 4.3 8 7.8 8.5 11.8 C9 15.8 12.5 18.7 16.5 18.3 C18 18.2 19.4 17.6 20.5 16.8 C18.8 20 15.4 21.7 11.7 21 C7.2 20.2 3.6 16.2 3.8 11.6 C4 7 7.7 3.3 12.2 3 C13 3 13.8 3.1 14.5 3.5 Z"/>
+      <path d="M18.5 4 l0.4 1.8 1.8 0.5 -1.8 0.6 -0.5 1.8 -0.5 -1.8 -1.8 -0.6 1.8 -0.5 z" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="g-global" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3.5 C17 3 20.5 7 20.5 12 C20.5 17 17 20.8 12 20.5 C7 20.8 3.3 17 3.5 12 C3.3 7 7 3 12 3.5 Z"/>
+      <path d="M4 9.5 C9 8.5 15 8.7 20 9.7 M4 14.5 C9 15.5 15 15.3 20 14.3 M12 3.5 C9 8 9 16 12 20.5 M12 3.5 C15 8 15 16 12 20.5"/>
+    </symbol>
+  </svg>
+
   <header>
-    <img src="../icons/icon.svg" alt="" width="36" height="36">
+    <img src="../icons/icon.svg" alt="">
     <h1>sloppy lightswitch</h1>
   </header>
 
-  <section>
+  <section class="card">
     <h2>everywhere</h2>
     <div class="modes" id="global-modes" role="radiogroup" aria-label="Global mode">
-      <button data-mode="system"><span class="emoji">🖥️</span>system</button>
-      <button data-mode="light"><span class="emoji">🌞</span>light</button>
-      <button data-mode="dark"><span class="emoji">🌚</span>dark</button>
-      <button data-mode="invert"><span class="emoji">🙃</span>invert</button>
+      <button data-mode="system" role="radio"><svg><use href="#g-system"/></svg>system</button>
+      <button data-mode="light" role="radio"><svg><use href="#g-light"/></svg>light</button>
+      <button data-mode="dark" role="radio"><svg><use href="#g-dark"/></svg>dark</button>
     </div>
   </section>
 
-  <section id="host-section" hidden>
-    <h2>just for <span id="host-name"></span></h2>
+  <section class="card" id="host-section" hidden>
+    <h2>just for <span class="host" id="host-name"></span></h2>
     <div class="modes" id="host-modes" role="radiogroup" aria-label="Site mode">
-      <button data-mode=""><span class="emoji">🌐</span>global</button>
-      <button data-mode="system"><span class="emoji">🖥️</span>system</button>
-      <button data-mode="light"><span class="emoji">🌞</span>light</button>
-      <button data-mode="dark"><span class="emoji">🌚</span>dark</button>
-      <button data-mode="invert"><span class="emoji">🙃</span>invert</button>
+      <button data-mode="" role="radio"><svg><use href="#g-global"/></svg>same as everywhere</button>
+      <button data-mode="system" role="radio"><svg><use href="#g-system"/></svg>system</button>
+      <button data-mode="light" role="radio"><svg><use href="#g-light"/></svg>light</button>
+      <button data-mode="dark" role="radio"><svg><use href="#g-dark"/></svg>dark</button>
     </div>
   </section>
 
-  <section id="no-host" hidden>
-    <p class="hint">this page has no host to switch — sloppy, but true 💅</p>
+  <section class="card" id="no-host" hidden>
+    <p class="hint">this page has no host to switch. sloppy, but true.</p>
   </section>
 
   <footer>
-    <p class="hint" id="status"></p>
-    <p class="hint">🔄 already-open pages pick up changes on reload</p>
+    <p class="hint status" id="status"></p>
+    <p class="hint">already-open pages pick up changes on reload</p>
+    <p class="hint"><button class="linkish" id="open-options" type="button">all sites, the sloppy list &amp; more</button></p>
   </footer>
 
+  <script src="../shared/settings.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

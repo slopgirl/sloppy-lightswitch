@@ -26,18 +26,9 @@ assert.equal(
 // whitespace and case don't matter
 assert.equal(rewriteCondition("( PREFERS-COLOR-SCHEME : DARK )", "light"), FALSE_COND);
 
-// invert swaps, both directions, and keeps tracking the OS
-assert.equal(rewriteCondition("(prefers-color-scheme: dark)", "invert"), "(prefers-color-scheme: light)");
-assert.equal(rewriteCondition("(prefers-color-scheme: light)", "invert"), "(prefers-color-scheme: dark)");
-assert.equal(
-  rewriteCondition("(prefers-color-scheme: no-preference)", "invert"),
-  "(prefers-color-scheme: no-preference)"
-);
-assert.equal(rewriteCondition("(prefers-color-scheme)", "invert"), "(prefers-color-scheme)");
-
 // untouched things stay untouched
 assert.equal(rewriteCondition("print", "dark"), "print");
-assert.equal(rewriteCondition("(min-width: 600px)", "invert"), "(min-width: 600px)");
+assert.equal(rewriteCondition("(min-width: 600px)", "light"), "(min-width: 600px)");
 
 // multiple occurrences in one text (the CSS-file case)
 assert.equal(
@@ -51,4 +42,4 @@ assert.equal(
 assert.ok(needsRewrite("@media (prefers-color-scheme: dark) {}"));
 assert.ok(!needsRewrite("body { color: red }"));
 
-console.log("rewrite tests passed ✨");
+console.log("rewrite tests passed");

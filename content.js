@@ -24,7 +24,7 @@
   if (window.__sloppyLightswitchApplied) return;
   window.__sloppyLightswitchApplied = true;
 
-  const MODES = ["system", "light", "dark", "invert"];
+  const MODES = ["system", "light", "dark"];
   const settings = window.__SLOPPY_SETTINGS || { global: "system", hosts: {} };
   delete window.__SLOPPY_SETTINGS;
 
@@ -63,7 +63,7 @@
 
   /* ---- 2. stylesheets ---- */
 
-  const doneRules = new WeakSet(); // invert must not flip a rule twice
+  const doneRules = new WeakSet(); // rewrite each rule once
   const refetchedSheets = new WeakSet();
 
   function walkRules(rules) {
@@ -156,7 +156,7 @@
 
   /* ---- 3. media="" attributes ---- */
 
-  const attrDone = new WeakMap(); // element → value we set (invert loop guard)
+  const attrDone = new WeakMap(); // element → value we set (observer loop guard)
 
   function fixMediaAttr(el) {
     if (el.nodeType !== 1 || typeof el.getAttribute !== "function") return;
@@ -179,14 +179,6 @@
 
   /* ---- 4. UA color-scheme pin ---- */
 
-  // Content-script matchMedia is the unpatched one: real OS answer.
-  const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
-
-  function desiredScheme() {
-    if (mode === "invert") return systemDark.matches ? "light" : "dark";
-    return mode;
-  }
-
   let pinned = false;
 
   function pinColorScheme() {
@@ -197,18 +189,12 @@
         " " +
         (getComputedStyle(document.documentElement).colorScheme || "");
       if (pinned || (/light/i.test(declared) && /dark/i.test(declared))) {
-        document.documentElement.style.setProperty("color-scheme", desiredScheme(), "important");
+        document.documentElement.style.setProperty("color-scheme", mode, "important");
         pinned = true;
       }
     } catch (e) {
       /* no documentElement yet, or a very weird page */
     }
-  }
-
-  if (mode === "invert") {
-    systemDark.addEventListener("change", () => {
-      if (pinned) pinColorScheme();
-    });
   }
 
   /* ---- wiring ---- */

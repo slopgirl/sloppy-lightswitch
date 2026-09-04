@@ -1,42 +1,55 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- sloppy lightswitch: a hand-drawn day/night plate with a happy little switch -->
   <defs>
     <clipPath id="plate">
-      <rect x="3" y="3" width="90" height="90" rx="22"/>
+      <path d="M22 9 C50 5 82 6 106 10 C118 12 121 24 120 40 C121 70 120 90 117 107 C115 118 104 121 88 120 C60 122 40 121 22 118 C11 116 8 106 9 92 C7 60 8 40 10 22 C11 12 14 10 22 9 Z"/>
     </clipPath>
   </defs>
   <g clip-path="url(#plate)">
-    <!-- day side / night side -->
-    <rect x="3" y="3" width="45" height="90" fill="#ffe9a8"/>
-    <rect x="48" y="3" width="45" height="90" fill="#2e3161"/>
+    <!-- day side -->
+    <rect x="0" y="0" width="128" height="128" fill="#ffe6a3"/>
+    <!-- night side, wobbly edge -->
+    <path d="M62 -4 C70 20 58 40 66 62 C72 84 58 104 64 134 L134 134 L134 -4 Z" fill="#2c2f5c"/>
     <!-- sun -->
-    <circle cx="24" cy="24" r="8" fill="#ffb730"/>
-    <g stroke="#ffb730" stroke-width="3" stroke-linecap="round">
-      <line x1="24" y1="10" x2="24" y2="7"/>
-      <line x1="24" y1="38" x2="24" y2="41"/>
-      <line x1="10" y1="24" x2="7" y2="24"/>
-      <line x1="38" y1="24" x2="41" y2="24"/>
-      <line x1="14.1" y1="14.1" x2="12" y2="12"/>
-      <line x1="33.9" y1="33.9" x2="36" y2="36"/>
-      <line x1="14.1" y1="33.9" x2="12" y2="36"/>
-      <line x1="33.9" y1="14.1" x2="36" y2="12"/>
+    <circle cx="33" cy="34" r="11" fill="#ffb02e"/>
+    <g stroke="#ffb02e" stroke-width="4" stroke-linecap="round" fill="none">
+      <path d="M33 16 l-1 -6"/>
+      <path d="M33 52 l1 7"/>
+      <path d="M15 34 l-7 1"/>
+      <path d="M51 34 l6 -1"/>
+      <path d="M20 21 l-4 -5"/>
+      <path d="M46 47 l5 4"/>
+      <path d="M20 47 l-5 4"/>
+      <path d="M46 21 l3 -5"/>
     </g>
-    <!-- moon (crescent via overlay) -->
-    <circle cx="74" cy="70" r="10" fill="#f6f1d5"/>
-    <circle cx="78" cy="66" r="9" fill="#2e3161"/>
+    <!-- moon -->
+    <circle cx="96" cy="88" r="14" fill="#f7f1d4"/>
+    <circle cx="103" cy="82" r="12" fill="#2c2f5c"/>
     <!-- stars -->
-    <path d="M76 13 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 z" fill="#f6f1d5"/>
-    <circle cx="86" cy="34" r="2" fill="#f6f1d5"/>
-    <circle cx="64" cy="26" r="1.5" fill="#f6f1d5"/>
+    <path d="M100 22 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#f7f1d4"/>
+    <circle cx="112" cy="50" r="2.5" fill="#f7f1d4"/>
+    <circle cx="84" cy="36" r="2" fill="#f7f1d4"/>
+    <circle cx="80" cy="112" r="1.8" fill="#f7f1d4"/>
   </g>
-  <!-- switch plate -->
-  <rect x="35" y="22" width="26" height="52" rx="13" fill="#fffdf7" stroke="#3a3a3a" stroke-width="3"/>
-  <!-- knob with a cute face -->
-  <circle cx="48" cy="37" r="9.5" fill="#ff9cb0" stroke="#3a3a3a" stroke-width="3"/>
-  <circle cx="44.5" cy="35.5" r="1.4" fill="#3a3a3a"/>
-  <circle cx="51.5" cy="35.5" r="1.4" fill="#3a3a3a"/>
-  <path d="M44.5 39.5 q3.5 3 7 0" stroke="#3a3a3a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-  <circle cx="41.5" cy="38.5" r="1.3" fill="#ff6e8a" opacity="0.75"/>
-  <circle cx="54.5" cy="38.5" r="1.3" fill="#ff6e8a" opacity="0.75"/>
-  <!-- outer border -->
-  <rect x="3" y="3" width="90" height="90" rx="22" fill="none" stroke="#3a3a3a" stroke-width="4"/>
+  <!-- switch plate, a bit crooked -->
+  <g transform="rotate(-7 64 66)">
+    <path d="M50 30 C58 27 70 27 78 30 C84 32 85 40 84 50 C85 70 84 86 82 96 C80 104 72 105 64 105 C56 105 48 104 46 96 C44 84 43 68 44 50 C43 40 44 32 50 30 Z"
+          fill="#fffaf0" stroke="#3a3a3a" stroke-width="4" stroke-linejoin="round"/>
+    <!-- knob with a cute face -->
+    <path d="M64 37 C74 36 80 43 79 51 C79 59 72 65 63 64 C54 65 48 58 49 50 C48 42 54 37 64 37 Z"
+          fill="#9fe3c4" stroke="#3a3a3a" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="58.5" cy="48" r="2" fill="#3a3a3a"/>
+    <circle cx="69" cy="47.5" r="2.4" fill="#3a3a3a"/>
+    <path d="M58 54 q6 5 12 -1" stroke="#3a3a3a" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <circle cx="54" cy="53" r="2.2" fill="#ffb02e" opacity="0.7"/>
+    <circle cx="74" cy="52" r="2.2" fill="#ffb02e" opacity="0.7"/>
+    <!-- lower half of the plate: a little scribble where the knob is not -->
+    <path d="M55 80 q9 -3 18 1" stroke="#3a3a3a" stroke-width="2.4" fill="none" stroke-linecap="round" opacity="0.5"/>
+    <path d="M56 88 q8 3 16 -1" stroke="#3a3a3a" stroke-width="2.4" fill="none" stroke-linecap="round" opacity="0.5"/>
+  </g>
+  <!-- hand-drawn outline, drawn twice because sloppy -->
+  <path d="M22 9 C50 5 82 6 106 10 C118 12 121 24 120 40 C121 70 120 90 117 107 C115 118 104 121 88 120 C60 122 40 121 22 118 C11 116 8 106 9 92 C7 60 8 40 10 22 C11 12 14 10 22 9 Z"
+        fill="none" stroke="#3a3a3a" stroke-width="4.5" stroke-linejoin="round"/>
+  <path d="M24 12 C52 8 84 10 105 13 C115 15 118 26 118 42 C118 70 117 90 115 105"
+        fill="none" stroke="#3a3a3a" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
 </svg>

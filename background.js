@@ -13,8 +13,8 @@
 
 "use strict";
 
-const DEFAULTS = { global: "system", hosts: {} };
-let settings = { ...DEFAULTS };
+const { DEFAULTS, sanitize } = globalThis.sloppySettings;
+let settings = sanitize(DEFAULTS);
 
 let registeredScript = null;
 let syncChain = Promise.resolve();
@@ -42,14 +42,19 @@ function syncContentScript() {
   return syncChain;
 }
 
-browser.storage.local.get(DEFAULTS).then((stored) => {
-  settings = { ...DEFAULTS, ...stored };
+browser.storage.local.get(DEFAULTS).then(async (stored) => {
+  settings = sanitize(stored);
+  // 0.4.0 and earlier could store "invert"; write the cleaned-up shape back
+  // so the UI pages never see it
+  if (JSON.stringify(settings) !== JSON.stringify({ global: stored.global, hosts: stored.hosts })) {
+    await browser.storage.local.set(settings);
+  }
   syncContentScript();
 });
 
 browser.storage.onChanged.addListener((changes, area) => {
   if (area !== "local") return;
-  if (changes.global) settings.global = changes.global.newValue ?? DEFAULTS.global;
-  if (changes.hosts) settings.hosts = changes.hosts.newValue ?? {};
+  if (changes.global) settings.global = sanitize({ global: changes.global.newValue }).global;
+  if (changes.hosts) settings.hosts = sanitize({ hosts: changes.hosts.newValue }).hosts;
   syncContentScript();
 });

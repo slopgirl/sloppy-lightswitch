@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 Versioning follows [SemVer](https://semver.org/).
 
+## [0.5.0] - 2026-09-04
+
+### Added
+
+- **Settings page** (`options_ui`, opens as a tab): the global mode, every
+  per-host switch with change/forget/add, and *the sloppy list* — a plain
+  textarea with one `host mode` per line for when nothing else is reachable.
+  On Firefox for Android it lives at *Settings → Extensions → sloppy
+  lightswitch → Settings*, which works even where the popup doesn't; the popup
+  links to it too.
+- Settings model in `shared/settings.js` (sanitizing, host normalization, list
+  parsing) shared by background, popup, options page and tests, with its own
+  unit tests.
+- Rendered PNG icons (16–128px) from the SVG, referenced by the manifest, so
+  the icon shows up in the Android add-ons manager and can be used for the AMO
+  listing. `just icons` re-renders them.
+
+### Changed
+
+- Popup redesigned: hand-drawn wobbly cards, no emoji, inline SVG glyphs,
+  touch-sized buttons, full width on Android, sunny yellow accent instead of
+  the salmon pink. The per-site *global* button is
+  now *same as everywhere*.
+- The icon got sloppier (crooked plate, wobbly outline, happier switch, a
+  mint knob instead of the pink one).
+- Popup host detection falls back to any active tab when the current-window
+  query comes back empty.
+- The popup and the settings page follow the global mode themselves: `light`
+  and `dark` pin their palette, `system` follows the OS.
+
+### Removed
+
+- The `invert` mode. Stored `invert` values are cleaned up to `system` (global)
+  or dropped (per host) on the first run of this version.
+
 ## [0.4.0] - 2026-08-31
 
 ### Changed

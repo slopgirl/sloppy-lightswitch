@@ -24,23 +24,64 @@ lint:
 run:
     npx --yes web-ext@latest run --source-dir=. {{ignore}}
 
-# run on a connected Android device (needs adb + Firefox for Android)
-run-android:
-    npx --yes web-ext@latest run --source-dir=. --target firefox-android {{ignore}}
+# picks the device itself when exactly one is attached, and the Firefox build
+# itself unless told (org.mozilla.fenix = Nightly/Developer builds, preferred;
+# org.mozilla.firefox_beta; org.mozilla.firefox = release, which web-ext
+# currently fails to launch: "Activity class ... App does not exist")
+# Run on a connected Android device via adb (usage: just run-android [device] [apk-id])
+run-android device="" apk="":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    device="{{device}}"
+    if [ -z "$device" ]; then
+        devices=$(adb devices | awk 'NR>1 && $2=="device" {print $1}')
+        count=$(printf '%s\n' "$devices" | grep -c . || true)
+        if [ "$count" -eq 1 ]; then
+            device="$devices"
+        elif [ "$count" -eq 0 ]; then
+            echo "error: no android device in 'adb devices' (usb debugging on? authorized?)" >&2; exit 1
+        else
+            echo "error: several devices, pick one: just run-android <device>" >&2
+            printf '  %s\n' $devices >&2; exit 1
+        fi
+    fi
+    apk="{{apk}}"
+    if [ -z "$apk" ]; then
+        installed=$(adb -s "$device" shell pm list packages | tr -d '\r' | sed 's/^package://')
+        for candidate in org.mozilla.fenix org.mozilla.firefox_beta org.mozilla.firefox; do
+            if printf '%s\n' "$installed" | grep -qx "$candidate"; then apk="$candidate"; break; fi
+        done
+        if [ -z "$apk" ]; then echo "error: no Firefox build found on $device" >&2; exit 1; fi
+    fi
+    echo "device $device, firefox build $apk"
+    npx --yes web-ext@latest run --source-dir=. --target firefox-android \
+        --android-device="$device" --firefox-apk="$apk" --adb-remove-old-artifacts {{ignore}}
 
-# run the media-condition rewrite unit tests
+# run the unit tests (media-condition rewriting, settings model)
 test:
     node test/rewrite.test.js
+    node test/settings.test.js
 
 # syntax-check the JS without any tooling
 check: test
     node --check background.js
     node --check content.js
     node --check shared/rewrite.js
+    node --check shared/settings.js
     node --check popup/popup.js
+    node --check options/options.js
     python3 -m json.tool manifest.json > /dev/null
     python3 -m json.tool amo-metadata.json > /dev/null
-    @echo "all good ✨"
+    @echo "all good"
+
+# re-render icons/icon-*.png from icons/icon.svg (needs rsvg-convert: brew install librsvg)
+icons:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for size in 16 32 48 64 96 128; do
+        rsvg-convert -w "$size" -h "$size" icons/icon.svg -o "icons/icon-$size.png"
+    done
+    echo "icons/icon-{16,32,48,64,96,128}.png rendered"
 
 # build a distributable package into dist/
 build: lint test

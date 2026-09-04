@@ -1,0 +1,266 @@
+/* Sloppy Lightswitch — shared look for popup + options page
+ *
+ * Hand-drawn-ish: wobbly borders, slightly crooked cards, a marker-ish
+ * heading font where the OS has one. No webfonts, no emoji.
+ */
+
+:root {
+  /* which side of light-dark() wins is decided by color-scheme on the root:
+     "light dark" follows the OS, and the pages pin it to the global mode
+     (see applyScheme in shared/settings.js) */
+  color-scheme: light dark;
+  --paper: light-dark(#fff8e6, #23223a);
+  --paper-2: light-dark(#fff1c9, #2c2b47);
+  --ink: light-dark(#2f2a3a, #f4eedd);
+  --ink-soft: light-dark(#6f6880, #a9a3bd);
+  --line: light-dark(#2f2a3a, #f4eedd);
+  --card: light-dark(#fffdf7, #2f2e4d);
+  --accent: light-dark(#ffd257, #f2c94c);
+  --accent-ink: #2f2a3a;
+  --yellow: light-dark(#ffeeb3, #f2d47a);
+  --blue: light-dark(#2c2f5c, #f4eedd);
+  --shadow: light-dark(rgba(47, 42, 58, 0.18), rgba(0, 0, 0, 0.35));
+  --wobble: 255px 18px 225px 18px / 18px 225px 18px 255px;
+  --wobble-2: 18px 225px 18px 255px / 255px 18px 225px 18px;
+  --wobble-3: 60px 14px 40px 12px / 12px 40px 14px 60px;
+}
+
+:root[data-scheme="light"] {
+  color-scheme: light;
+}
+
+:root[data-scheme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 12% 18%, var(--paper-2) 0 2px, transparent 3px) 0 0 / 28px 28px,
+    var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  font-size: 15px;
+  line-height: 1.35;
+  -webkit-text-size-adjust: 100%;
+}
+
+.marker,
+h1,
+h2 {
+  font-family: "Marker Felt", "Chalkboard SE", "Segoe Print", "Comic Sans MS", "Comic Neue", -apple-system, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+/* ---- header ---- */
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+header img {
+  width: 44px;
+  height: 44px;
+  transform: rotate(-6deg);
+  filter: drop-shadow(2px 2px 0 var(--shadow));
+}
+
+h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  position: relative;
+  display: inline-block;
+}
+
+h1::after {
+  /* a scribbled underline */
+  content: "";
+  position: absolute;
+  left: -2px;
+  right: 6px;
+  bottom: -7px;
+  height: 7px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 8' preserveAspectRatio='none'%3E%3Cpath d='M1 5 C20 2 30 7 50 4 S80 2 100 5 S115 3 119 4' fill='none' stroke='%23ffd257' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+}
+
+.tagline {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+/* ---- cards ---- */
+
+.card {
+  position: relative;
+  margin: 0 0 14px;
+  padding: 12px 12px 12px;
+  background: var(--card);
+  border: 2.5px solid var(--line);
+  border-radius: var(--wobble);
+  box-shadow: 3px 4px 0 var(--shadow);
+  transform: rotate(-0.6deg);
+}
+
+.card:nth-of-type(even) {
+  border-radius: var(--wobble-2);
+  transform: rotate(0.5deg);
+}
+
+.card > * {
+  transform: none;
+}
+
+h2 {
+  margin: -2px 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+h2 .host {
+  display: inline-block;
+  padding: 0 6px;
+  /* the chip is yellow in both palettes, so its text has to stay dark */
+  background: var(--yellow);
+  color: #2f2a3a;
+  border-radius: var(--wobble-3);
+  transform: rotate(-1deg);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* ---- mode buttons ---- */
+
+.modes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 8px;
+}
+
+.modes button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 2.5px solid var(--line);
+  border-radius: var(--wobble-3);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--shadow);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.modes button:nth-child(2n) {
+  transform: rotate(0.8deg);
+}
+
+.modes button:nth-child(3n) {
+  transform: rotate(-0.9deg);
+}
+
+.modes button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--shadow);
+}
+
+.modes button:active {
+  transform: translate(1px, 1px) scale(0.98);
+  box-shadow: 1px 1px 0 var(--shadow);
+}
+
+.modes button:focus-visible {
+  outline: 3px dashed var(--accent);
+  outline-offset: 2px;
+}
+
+.modes button[aria-checked="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--line);
+  transform: rotate(-1.5deg) scale(1.03);
+}
+
+.modes button[aria-checked="true"] svg {
+  color: var(--accent-ink);
+}
+
+.modes svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  color: var(--ink);
+}
+
+/* ---- text bits ---- */
+
+.hint {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.hint b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.hint + .hint {
+  margin-top: 4px;
+}
+
+a,
+.linkish {
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline wavy var(--accent);
+  text-underline-offset: 3px;
+}
+
+a:hover,
+.linkish:hover {
+  text-decoration-color: var(--ink);
+}
+
+footer {
+  margin-top: 4px;
+}
+
+.status {
+  min-height: 18px;
+}
+
+.status.ok {
+  color: var(--ink);
+}
+
+.status.bad {
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+
+[hidden] {
+  display: none !important;
+}

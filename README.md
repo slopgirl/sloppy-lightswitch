@@ -1,4 +1,4 @@
-# sloppy lightswitch 🌞🌚
+# sloppy lightswitch
 
 A Firefox (desktop **and Android**) WebExtension that gives you control over
 what websites see as your light/dark mode system setting
@@ -13,14 +13,37 @@ Flip it globally, or per host — sloppily.
 
 | mode | what happens |
 |---|---|
-| 🖥️ `system` | nothing is touched — pages behave as if the extension weren't there |
-| 🌞 `light` | the page is convinced your scheme is light |
-| 🌚 `dark` | the page is convinced your scheme is dark |
-| 🙃 `invert` | the opposite of your OS setting, live — flipping the OS theme still flips the page, just the wrong way around |
+| `system` | nothing is touched — pages behave as if the extension weren't there |
+| `light` | the page is convinced your scheme is light |
+| `dark` | the page is convinced your scheme is dark |
 
 The popup lets you pick a **global** mode and, for the site in the current tab,
-a **per-host** override (or `🌐 global` to follow the global mode again).
-Per-host overrides win over the global mode.
+a **per-host** override (or *same as everywhere* to follow the global mode
+again). Per-host overrides win over the global mode.
+
+## Settings page
+
+The popup only ever shows the current tab's host. The settings page shows all
+of it: the global mode, every per-host switch (change or forget each one, add
+new ones), and **the sloppy list** — a plain textarea with one `host mode` per
+line that replaces the whole per-host list on save:
+
+```
+# lines starting with # are ignored; ":" or "=" work as separators too
+blog.example.org dark
+docs.example.com: light
+old.example.net = system
+```
+
+Getting there:
+
+- from the popup: *all sites, the sloppy list & more*
+- desktop: `about:addons` → sloppy lightswitch → *Preferences* (opens a tab)
+- Firefox for Android: *Settings → Extensions → sloppy lightswitch →
+  Settings*. Firefox for Android does list browser actions under the menu's
+  *Extensions* entry and opens the popup as an overlay, but the add-ons
+  manager route always works — so the settings page is the fallback that
+  keeps the extension configurable when the popup is out of reach.
 
 ## How it works / limitations
 
@@ -32,7 +55,7 @@ Per-host overrides win over the global mode.
   `Sec-CH-Prefers-Color-Scheme` client hint header (Chromium-only in
   practice; Firefox never sends it) is out of scope, so the rare site that
   themes its server-rendered HTML from that hint won't follow.
-- 🫠 Sloppy edges: mode changes apply to pages on their next (re)load; rules
+- Sloppy edges: mode changes apply to pages on their next (re)load; rules
   a page inserts later through CSSOM (`insertRule`) aren't caught;
   `MediaQueryList.media` shows the rewritten query text; `@import`s nested
   inside refetched cross-origin sheets keep their original conditions; on
@@ -105,6 +128,13 @@ Only needed to make the add-on **public** — that is what makes it installable
 on the stable Firefox for Android channel, which refuses anything that did not
 come from addons.mozilla.org.
 
+`just sign listed` does the whole thing from the terminal, including creating
+the add-on the first time — `--amo-metadata` exists so that a listed add-on can
+be created through the API, and `amo-metadata.json` carries the fields the
+listing needs. The [Developer Hub](https://addons.mozilla.org/developers/) is
+where you watch the review afterwards and add the things the API cannot send
+(screenshots, support links, a privacy policy).
+
 1. `just bump 0.5.0` and update the CHANGELOG. Version numbers are unique per
    add-on across *both* channels, so a number already used for an unlisted
    signature cannot be reused for the listed submission.
@@ -128,9 +158,16 @@ just            # list recipes
 just check      # unit tests + syntax checks (no tooling needed)
 just lint       # AMO linter (via npx web-ext)
 just run        # temporary Firefox with the extension loaded
+just icons      # re-render icons/icon-*.png from icons/icon.svg (needs librsvg)
 just build      # lint + test + package into dist/
 just sign       # lint + test + AMO-signed .xpi into dist/
 ```
+
+Layout: `background.js` registers the content script (`content.js` +
+`shared/rewrite.js`), `popup/` and `options/` are the two UI pages sharing
+`shared/sloppy.css` and the settings model in `shared/settings.js`. The icon
+is drawn once as `icons/icon.svg`; the manifest points at the rendered PNGs
+because the Android add-ons manager (and AMO's listing) can't use SVG.
 
 Sources live at the repo root, so the package is defined by an ignore list in
 the justfile (`test/`, `tools/`, `*.md`, `justfile`, `amo-metadata.json`) that

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>sloppy lightswitch settings</title>
+  <link rel="stylesheet" href="../shared/sloppy.css">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="g-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3.5 C17 3 20.5 7 20.5 12 C20.5 17 17 20.8 12 20.5 C7 20.8 3.3 17 3.5 12 C3.3 7 7 3 12 3.5 Z"/>
+      <path d="M12 3.5 C12.4 9 11.6 15 12 20.5 C17 20.8 20.5 17 20.5 12 C20.5 7 17 3 12 3.5 Z" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="g-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <path d="M12 7.5 C15 7.2 16.8 9.5 16.5 12 C16.8 14.8 14.6 16.7 12 16.5 C9.3 16.7 7.2 14.6 7.5 12 C7.2 9.4 9.4 7.2 12 7.5 Z"/>
+      <path d="M12 2.5 l0.3 2.3 M12 19.3 l-0.3 2.2 M2.5 12 l2.4 -0.3 M19.2 12.2 l2.3 0.2 M5.2 5.4 l1.7 1.5 M17.2 17 l1.6 1.8 M5.3 18.8 l1.6 -1.7 M17.3 6.8 l1.5 -1.7"/>
+    </symbol>
+    <symbol id="g-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14.5 3.5 C10.5 4.3 8 7.8 8.5 11.8 C9 15.8 12.5 18.7 16.5 18.3 C18 18.2 19.4 17.6 20.5 16.8 C18.8 20 15.4 21.7 11.7 21 C7.2 20.2 3.6 16.2 3.8 11.6 C4 7 7.7 3.3 12.2 3 C13 3 13.8 3.1 14.5 3.5 Z"/>
+      <path d="M18.5 4 l0.4 1.8 1.8 0.5 -1.8 0.6 -0.5 1.8 -0.5 -1.8 -1.8 -0.6 1.8 -0.5 z" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="g-global" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3.5 C17 3 20.5 7 20.5 12 C20.5 17 17 20.8 12 20.5 C7 20.8 3.3 17 3.5 12 C3.3 7 7 3 12 3.5 Z"/>
+      <path d="M4 9.5 C9 8.5 15 8.7 20 9.7 M4 14.5 C9 15.5 15 15.3 20 14.3 M12 3.5 C9 8 9 16 12 20.5 M12 3.5 C15 8 15 16 12 20.5"/>
+    </symbol>
+  </svg>
+
+  <main>
+    <header>
+      <img src="../icons/icon.svg" alt="">
+      <div>
+        <h1>sloppy lightswitch</h1>
+        <p class="tagline">all the switches, in one crooked place</p>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>everywhere</h2>
+      <div class="modes" id="global-modes" role="radiogroup" aria-label="Global mode">
+        <button data-mode="system" role="radio"><svg><use href="#g-system"/></svg>system</button>
+        <button data-mode="light" role="radio"><svg><use href="#g-light"/></svg>light</button>
+        <button data-mode="dark" role="radio"><svg><use href="#g-dark"/></svg>dark</button>
+      </div>
+      <p class="hint">
+        <b>system</b> leaves pages alone, as if the extension were not there.
+        <b>light</b> / <b>dark</b> convince every page that this is your setting.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>per site</h2>
+      <ul class="hosts" id="host-list"></ul>
+      <p class="hint" id="no-hosts">no per-site switches yet. pick one from the popup, or add one here:</p>
+      <form class="add-row" id="add-form">
+        <input id="add-host" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="blog.example.org" aria-label="Host">
+        <select id="add-mode" aria-label="Mode">
+          <option value="dark">dark</option>
+          <option value="light">light</option>
+          <option value="system">system</option>
+        </select>
+        <button type="submit">add</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>the sloppy list</h2>
+      <p class="hint">
+        when everything else fails, this still works: one site per line, then a space, then
+        <b>light</b>, <b>dark</b> or <b>system</b>. lines starting with <b>#</b> are ignored.
+        saving replaces the whole per-site list.
+      </p>
+      <textarea id="list" rows="8" spellcheck="false" autocapitalize="none" autocomplete="off"
+        placeholder="# example&#10;blog.example.org dark&#10;docs.example.com light"></textarea>
+      <div class="row">
+        <button type="button" id="save-list">save list</button>
+        <button type="button" class="linkish" id="reload-list">discard my edits</button>
+      </div>
+      <p class="hint status" id="list-status"></p>
+    </section>
+
+    <footer>
+      <p class="hint">already-open pages pick up changes on reload. everything lives in your browser; nothing is sent anywhere.</p>
+    </footer>
+  </main>
+
+  <script src="../shared/settings.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

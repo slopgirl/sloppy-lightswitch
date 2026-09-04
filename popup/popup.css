@@ -1,121 +1,16 @@
-:root {
-  color-scheme: light dark;
-  --bg: #fffdf7;
-  --fg: #33344a;
-  --card: #fff;
-  --border: #e5dfd0;
-  --accent: #ff9cb0;
-  --accent-fg: #5c1f2e;
-  --hint: #9a94a8;
+body {
+  padding: 14px 14px 12px;
+  width: 340px;
+  max-width: 100vw;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #23243d;
-    --fg: #f2eedf;
-    --card: #2e3050;
-    --border: #3d3f66;
-    --accent: #ff9cb0;
-    --accent-fg: #40121f;
-    --hint: #8f8aa6;
+/* Android renders the popup as a full-width overlay */
+@media (max-width: 420px) {
+  body {
+    width: auto;
   }
 }
 
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  padding: 14px;
-  min-width: 300px;
-  max-width: 420px;
-  background: var(--bg);
-  color: var(--fg);
-  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
-  font-size: 15px;
-}
-
-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-h1 {
-  margin: 0;
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-h2 {
-  margin: 0 0 6px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--hint);
-  overflow-wrap: anywhere;
-}
-
-h2 #host-name {
-  color: var(--fg);
-  text-transform: none;
-}
-
-section {
-  margin-bottom: 14px;
-}
-
-.modes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.modes button {
-  flex: 1 1 calc(50% - 6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 8px;
-  border: 2px solid var(--border);
-  border-radius: 14px;
-  background: var(--card);
-  color: var(--fg);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.06s ease, border-color 0.1s ease;
-}
-
-.modes button:active {
-  transform: scale(0.96);
-}
-
-.modes button[aria-checked="true"] {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--accent-fg);
-}
-
-.emoji {
-  font-size: 17px;
-}
-
-.hint {
-  margin: 0;
-  font-size: 12px;
-  color: var(--hint);
-}
-
-footer {
-  min-height: 16px;
-}
-
-[hidden] {
-  display: none !important;
+#host-modes button:first-child {
+  grid-column: 1 / -1;
 }

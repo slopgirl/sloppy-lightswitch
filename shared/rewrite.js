@@ -5,9 +5,7 @@
  *
  * Pinned modes ("light"/"dark") replace prefers-color-scheme conditions
  * with constants that are valid anywhere a media feature can appear:
- * (width >= 0px) is always true, (width < 0px) never is. "invert" swaps
- * the light/dark tokens instead, so the condition keeps tracking the OS
- * setting — just flipped.
+ * (width >= 0px) is always true, (width < 0px) never is.
  */
 
 "use strict";
@@ -24,14 +22,6 @@
   }
 
   function rewriteCondition(text, mode) {
-    if (mode === "invert") {
-      return text.replace(VALUE_RE, (match, value) => {
-        const v = value.toLowerCase();
-        if (v === "dark") return "(prefers-color-scheme: light)";
-        if (v === "light") return "(prefers-color-scheme: dark)";
-        return match;
-      });
-    }
     return text
       .replace(VALUE_RE, (match, value) => {
         const v = value.toLowerCase();
