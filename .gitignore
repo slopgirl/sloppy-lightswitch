@@ -4,3 +4,4 @@ web-ext-artifacts/
 node_modules/
 .env
 .amo-upload-uuid
+.claude/z-handoff.md
