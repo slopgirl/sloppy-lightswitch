@@ -135,6 +135,10 @@ listing needs. The [Developer Hub](https://addons.mozilla.org/developers/) is
 where you watch the review afterwards and add the things the API cannot send
 (screenshots, support links, a privacy policy).
 
+Listing text alone (summary, description) can be changed any time with
+`just listing`, which pushes the two fields from `amo-metadata.json` through
+the API without uploading a version.
+
 1. `just bump 0.5.0` and update the CHANGELOG. Version numbers are unique per
    add-on across *both* channels, so a number already used for an unlisted
    signature cannot be reused for the listed submission.

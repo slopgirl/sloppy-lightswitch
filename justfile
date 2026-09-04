@@ -127,6 +127,10 @@ _amo-creds:
 fetch-signed version="": _amo-creds
     @python3 tools/amo-fetch-signed.py {{addon_id}} {{version}}
 
+# Push summary/description from amo-metadata.json to the public AMO listing (no upload)
+listing: _amo-creds
+    @python3 tools/amo-update-listing.py {{addon_id}}
+
 # Bump the version in manifest.json (usage: just bump 0.5.0)
 bump version:
     @python3 -c "import json,collections; p='manifest.json'; m=json.load(open(p),object_pairs_hook=collections.OrderedDict); m['version']='{{version}}'; open(p,'w').write(json.dumps(m,indent=2)+chr(10))"
