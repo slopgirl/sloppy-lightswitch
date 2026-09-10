@@ -1,5 +1,18 @@
 # NOTES (for future me)
 
+## Decisions (0.5.1, popup width)
+
+- **Never size a popup with a `@media (max-width: ...)` query.** A browser
+  action popup has no viewport of its own: Firefox sizes the panel *from* the
+  document, so such a query reacts to the width it is itself setting. 0.5.0 had
+  `width: 340px` + `@media (max-width: 420px) { width: auto }` for Android's
+  full-width overlay; on desktop that fed back on itself and the panel came up
+  a few pixels wide, a cream sliver with a scrollbar. The width has to be a
+  floor (`min-width: 340px; max-width: 420px`, as it was before 0.5.0) — the
+  Android overlay then fills itself from the auto width, no query needed.
+- Options page keeps its `@media (max-width: 380px)` rules: it opens in a real
+  tab (`open_in_tab: true`), so there is a real viewport and no feedback loop.
+
 ## Decisions (0.5.0, settings page + sloppy UI)
 
 - **`options_ui` with `open_in_tab: true` is the Android escape hatch.**
