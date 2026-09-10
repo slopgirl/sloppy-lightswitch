@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "sloppy lightswitch uwu",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Sloppily flip what pages see as your prefers-color-scheme, per site or globally: matchMedia, CSS media queries, UA color-scheme. Modes: system, light, dark.",
   "homepage_url": "https://github.com/slopgirl/sloppy-lightswitch",
   "browser_specific_settings": {

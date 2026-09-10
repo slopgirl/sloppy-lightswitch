@@ -1,14 +1,13 @@
 body {
   padding: 14px 14px 12px;
-  width: 340px;
-  max-width: 100vw;
-}
-
-/* Android renders the popup as a full-width overlay */
-@media (max-width: 420px) {
-  body {
-    width: auto;
-  }
+  /* A popup panel has no viewport of its own: it is sized *from* this
+     document. So width has to be a floor, not a fixed value, and a
+     `@media (max-width: ...)` query here is circular — the width it reacts to
+     is the width it sets, so the panel collapses to a sliver on desktop.
+     min-width keeps the desktop panel readable; on Android, where the popup
+     is a full-width overlay, the auto width just fills it. */
+  min-width: 340px;
+  max-width: 420px;
 }
 
 #host-modes button:first-child {

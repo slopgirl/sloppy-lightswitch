@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 Versioning follows [SemVer](https://semver.org/).
 
+## [0.5.1] - 2026-09-10
+
+### Fixed
+
+- Popup on desktop Firefox collapsed to an unusable sliver a few pixels wide.
+  0.5.0 sized it with a fixed `width` plus a `@media (max-width: 420px)` rule
+  meant for Android, but a popup has no viewport of its own — it is sized
+  *from* its own document, so that query reacted to the width it was setting
+  and the panel shrank to nothing. The width is a `min-width` floor again, and
+  Android still gets its full-width overlay from the auto width.
+
 ## [0.5.0] - 2026-09-04
 
 ### Added
